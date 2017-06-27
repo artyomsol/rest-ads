@@ -1,14 +1,12 @@
 import _root_.sbtbuildinfo.BuildInfoPlugin
 import _root_.sbtbuildinfo.BuildInfoPlugin.autoImport._
-import _root_.xerial.sbt.Pack._
-import com.typesafe.sbt.GitBranchPrompt
 import com.typesafe.sbt.GitPlugin.autoImport._
-import com.typesafe.sbt.GitVersioning
+import com.typesafe.sbt.{GitBranchPrompt, GitVersioning}
 import xerial.sbt.Pack._
 
 name := "rest-ads"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= {
   val akkaVersion = "10.0.9"
@@ -19,6 +17,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http" % akkaVersion,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaVersion,
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
+    "joda-time" % "joda-time" % "2.9.+",
+    "org.joda" % "joda-convert" % "1.8.+",
     "com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % Test
   )
 }
@@ -29,7 +29,7 @@ fork in Test := true
 
 scalacOptions in Test ++= Seq("-Yrangepos")
 
-scalacOptions := Seq("-feature", "-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.8")
+scalacOptions := Seq("-feature", "-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.8", "-Ydead-code")
 
 // sbt-git version control
 lazy val `rest-ads` = (project in file(".")).
