@@ -8,16 +8,16 @@ import service.model.FuelType._
  * Package: service.model
  * Created by asoloviov on 6/27/17 3:07 PM.
  */
-case class AdEntity(id: Long, title: String, fuel: FuelType, price: Int, `new`: Boolean, mileage: Option[Int] = None, firstRegistration: Option[DateTime] = None) {
+case class ADEntity(id: Long, title: String, fuel: FuelType, price: Int, `new`: Boolean, mileage: Option[Int] = None, firstRegistration: Option[DateTime] = None) {
   require(!title.isEmpty, "title.empty")
   require(`new` == mileage.isEmpty, "new.car.mileage.defined")
   require(`new` == firstRegistration.isEmpty, "new.car.firstRegistration.defined")
 }
 
-object AdEntity {
+object ADEntity {
 
   import service.utils.JodaDateTimeExtensions._
   import spray.json.DefaultJsonProtocol._
 
-  implicit val adEntityFormat = jsonFormat7(AdEntity.apply)
+  implicit val adEntityFormat = jsonFormat7(ADEntity.apply)
 }
