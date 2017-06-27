@@ -1,4 +1,4 @@
-package utils
+package service.utils
 
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
 
 /**
  * Project: rest-ads
- * Package: utils
+ * Package: service.utils
  * Created by asoloviov on 6/27/17 5:27 PM.
  */
 object JodaDateTimeExtensions {

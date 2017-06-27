@@ -16,8 +16,8 @@ case class AdEntity(id: Long, title: String, fuel: FuelType, price: Int, `new`: 
 
 object AdEntity {
 
+  import service.utils.JodaDateTimeExtensions._
   import spray.json.DefaultJsonProtocol._
-  import utils.JodaDateTimeExtensions._
 
   implicit val adEntityFormat = jsonFormat7(AdEntity.apply)
 }
