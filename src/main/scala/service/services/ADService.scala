@@ -2,6 +2,7 @@ package service.services
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
+import service.model.ADEntity.IDType
 import service.model.{ADEntity, ADEntityUpdate}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,12 +15,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class ADService(implicit ec: ExecutionContext) {
   def getAllADs(sortByField: String, desc: Boolean = false): Source[ADEntity, NotUsed] = ???
 
-  def getADByID(id: Long): Future[ADEntity] = ???
+  def getADByID(id: IDType): Future[ADEntity] = ???
 
   def createAD(ad: ADEntity): Future[ADEntity] = ???
 
-  def updateAD(id: Long, adEntityUpdate: ADEntityUpdate): Future[Option[ADEntity]] = ???
+  def updateAD(id: IDType, adEntityUpdate: ADEntityUpdate): Future[Option[ADEntity]] = ???
 
-  def deleteAD(id: Long): Future[Boolean] = ???
+  def deleteAD(id: IDType): Future[Boolean] = ???
 
 }

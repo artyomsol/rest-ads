@@ -1,6 +1,7 @@
 package service.model
 
 import org.joda.time.DateTime
+import service.model.ADEntity.IDType
 import service.model.FuelType._
 
 import scala.util.Try
@@ -27,7 +28,7 @@ case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: 
     )
   }
 
-  def toADEntityWithID(id: Long): Try[ADEntity] = Try {
+  def toADEntityWithID(id: IDType): Try[ADEntity] = Try {
     require(title.isDefined, "title.field.empty")
     require(fuel.isDefined, "fuel.field.empty")
     require(price.isDefined, "price.field.empty")

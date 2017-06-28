@@ -1,5 +1,7 @@
 package service.rest.routes
 
+import java.util.UUID
+
 import akka.http.scaladsl.model.{HttpEntity, MediaTypes, StatusCodes, Uri}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
@@ -13,7 +15,6 @@ import service.services.ADService
 import service.utils.TestData
 
 import scala.concurrent.Future
-import scala.util.Random
 
 /**
  * Project: rest-ads
@@ -31,7 +32,7 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
     val serviceRouter = new ADServiceRoute(mockedADService)
     val route = Route.seal(serviceRouter.route)
 
-    def generateId = math.abs(Random.nextLong())
+    def generateId = UUID.randomUUID().toString.filterNot(_ == "-")
 
     val randomId = generateId
     val entityEndpoint: Uri = Uri(s"/adverts/$randomId", Uri.ParsingMode.Strict)
@@ -124,7 +125,7 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
   it when {
     "creating/modifying advert" should {
       "validate required non empty title" in new Context {
-        val invalidOldCarADJson = """{"title":"","mileage":100000,"price":100,"fuel":"diesel","id":10,"new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
+        val invalidOldCarADJson = """{"title":"","mileage":100000,"price":100,"fuel":"diesel","id":"e029819db7b34917a3a277625f3e660e","new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
         val entity = HttpEntity(MediaTypes.`application/json`, invalidOldCarADJson)
         Post(entityEndpoint, entity) ~> route ~> check {
           handled shouldBe true
@@ -134,7 +135,7 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
       }
       "validate required fuel type field if no id provided" in new Context {
         // absent id means we are supposed to create new record
-        val invalidOldCarADJson = """{"title":"test","mileage":100000,"price":100,"id":10,"new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
+        val invalidOldCarADJson = """{"title":"test","mileage":100000,"price":100,"id":"e029819db7b34917a3a277625f3e660e","new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
         val entity = HttpEntity(MediaTypes.`application/json`, invalidOldCarADJson)
         Post("/adverts/", entity) ~> route ~> check {
           handled shouldBe true
@@ -143,11 +144,11 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
         }
       }
       "treat absent required field with id field specified in URI as update data request" in new Context {
-        val invalidOldCarADJson = """{"title":"test","mileage":100000,"price":100,"id":10,"new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
+        val invalidOldCarADJson = """{"title":"test","mileage":100000,"price":100,"id":"e029819db7b34917a3a277625f3e660e","new":false,"first registration":"2017-06-27T00:00:00.000+0000"}"""
         val updateADFromJson = invalidOldCarADJson.parseJson.convertTo[ADEntityUpdate]
         val entity = HttpEntity(MediaTypes.`application/json`, invalidOldCarADJson)
         val expectedAD = oldCarAD.withID(randomId)
-        when(mockedADService.updateAD(any(classOf[Long]), any(classOf[ADEntityUpdate]))).thenReturn(Future(Some(expectedAD)))
+        when(mockedADService.updateAD(any(classOf[IDType]), any(classOf[ADEntityUpdate]))).thenReturn(Future(Some(expectedAD)))
         Post(entityEndpoint, entity) ~> route ~> check {
           handled shouldBe true
           status shouldBe StatusCodes.OK

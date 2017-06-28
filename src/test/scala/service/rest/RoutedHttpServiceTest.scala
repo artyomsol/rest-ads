@@ -7,10 +7,9 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{Matchers, WordSpec}
+import service.model.ADEntity
 import service.rest.routes.ADServiceRoute
 import service.services.ADService
-
-import scala.util.Random
 
 /**
  * Project: rest-ads
@@ -28,7 +27,7 @@ class RoutedHttpServiceTest extends WordSpec with Matchers with ScalatestRouteTe
       val adServiceRouter = echoServiceRouter
     }
     val route = httpService.routes
-    val randomPath = Random.alphanumeric.take(10).mkString
+    val randomPath = ADEntity.getNextID
   }
 
   "HttpService" should {

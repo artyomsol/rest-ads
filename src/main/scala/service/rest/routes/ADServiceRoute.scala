@@ -29,7 +29,7 @@ class ADServiceRoute(adService: ADService) extends JsonSupport {
           }
         }
     } ~
-      pathPrefix(LongNumber) { id =>
+      pathPrefix(Segment) { id =>
         pathEndOrSingleSlash {
           get {
             complete(getADByID(id))
