@@ -3,6 +3,8 @@ package service.model
 import org.joda.time.DateTime
 import service.model.FuelType._
 
+import scala.util.Try
+
 /**
  * Project: rest-ads
  * Package: service.model
@@ -22,6 +24,16 @@ case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: 
       firstRegistration.orElse(ad.firstRegistration).filterNot(_ => resultingUsage)
     )
   }
+
+  def toADEntityWithID(id: Long): Try[ADEntity] = Try(
+    ADEntity(id,
+      title.ensuring(_.isDefined, "title.field.empty").get,
+      fuel.ensuring(_.isDefined, "fuel.field.empty").get,
+      price.ensuring(_.isDefined, "price.field.empty").get,
+      `new`.ensuring(_.isDefined, "new.field.empty").get,
+      mileage, firstRegistration
+    )
+  )
 }
 
 object ADEntityUpdate {

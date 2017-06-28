@@ -42,4 +42,10 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
       restoredOldCarAD shouldEqual oldCarAD
     }
   }
+  it should {
+    "convert itself to ADEntityUpdate instance" in {
+      val updateAD = oldCarAD.toUpdateAD
+      updateAD shouldEqual updateToOldCarAD
+    }
+  }
 }

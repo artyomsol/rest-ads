@@ -16,9 +16,16 @@ class ADService(implicit ec: ExecutionContext) {
 
   def getADByID(id: Long): Future[ADEntity] = ???
 
-  def createAD(ad: ADEntity): Future[ADEntity] = ???
+  private def createNewAD(ad: ADEntityUpdate): Future[ADEntity] = ???
 
-  def updateAD(id: Long, adEntityUpdate: ADEntityUpdate): Future[Option[ADEntity]] = ???
+  def createAD(ad: ADEntityUpdate, idOpt: Option[Long]): Future[ADEntity] =
+    idOpt.fold(createNewAD(ad))(id => createOrUpdateAD(id, ad))
+
+  import ADEntity._
+
+  def createAD(ad: ADEntity): Future[ADEntity] = createAD(ad.toUpdateAD, Some(ad.id))
+
+  def createOrUpdateAD(id: Long, adEntityUpdate: ADEntityUpdate): Future[ADEntity] = ???
 
   def deleteAD(id: Long): Future[Boolean] = ???
 
