@@ -11,6 +11,8 @@ import scala.util.Try
  * Created by asoloviov on 6/27/17 11:12 PM.
  */
 case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: Option[Int], `new`: Option[Boolean], mileage: Option[Int], firstRegistration: Option[DateTime] = None) {
+  require(title.exists(_.nonEmpty), "title.field.empty")
+
   //TODO must be tested
   def applyTo(ad: ADEntity): ADEntity = {
     val resultingUsage: Boolean = `new`.getOrElse(ad.`new`)
@@ -25,15 +27,14 @@ case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: 
     )
   }
 
-  def toADEntityWithID(id: Long): Try[ADEntity] = Try(
-    ADEntity(id,
-      title.ensuring(_.isDefined, "title.field.empty").get,
-      fuel.ensuring(_.isDefined, "fuel.field.empty").get,
-      price.ensuring(_.isDefined, "price.field.empty").get,
-      `new`.ensuring(_.isDefined, "new.field.empty").get,
-      mileage, firstRegistration
-    )
-  )
+  def toADEntityWithID(id: Long): Try[ADEntity] = Try {
+    require(title.isDefined, "title.field.empty")
+    require(fuel.isDefined, "fuel.field.empty")
+    require(price.isDefined, "price.field.empty")
+    require(`new`.isDefined, "new.field.empty")
+    require(`new`.isDefined, "new.field.empty")
+    ADEntity(Some(id), title.get, fuel.get, price.get, `new`.get, mileage, firstRegistration)
+  }
 }
 
 object ADEntityUpdate {

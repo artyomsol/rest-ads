@@ -13,16 +13,16 @@ import service.utils.TestData
 class ADEntityTest extends WordSpec with Matchers with TestData {
   "Car adverts" should {
     "accept required fields" in {
-      ADEntity(10L, "Audi A4 Avant", gasoline, 100, `new` = true) shouldBe a[ADEntity]
+      ADEntity(Some(10L), "Audi A4 Avant", gasoline, 100, `new` = true) shouldBe a[ADEntity]
     }
     "accept option fields" in {
-      ADEntity(10L, "Audi A4 Avant", diesel, 100, `new` = false, mileage = Some(100000), Some(DateTime.now().withTimeAtStartOfDay()))
+      ADEntity(Some(10L), "Audi A4 Avant", diesel, 100, `new` = false, mileage = Some(100000), Some(DateTime.now().withTimeAtStartOfDay()))
     }
     "require option fields for used car ads" in {
-      an[IllegalArgumentException] should be thrownBy ADEntity(10L, "Audi A4 Avant", diesel, 100, `new` = false, mileage = None, Some(DateTime.now().withTimeAtStartOfDay()))
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some(10L), "Audi A4 Avant", diesel, 100, `new` = false, mileage = None, Some(DateTime.now().withTimeAtStartOfDay()))
     }
     "require title non empty AD title" in {
-      an[IllegalArgumentException] should be thrownBy ADEntity(10L, "", gasoline, 10, `new` = true)
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some(10L), "", gasoline, 10, `new` = true)
     }
   }
   it should {
@@ -45,7 +45,7 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
   it should {
     "convert itself to ADEntityUpdate instance" in {
       val updateAD = oldCarAD.toUpdateAD
-      updateAD shouldEqual updateToOldCarAD
+      updateAD shouldEqual updateToOldCarAD.copy(price = Some(100))
     }
   }
 }

@@ -23,11 +23,11 @@ class ADServiceRoute(adService: ADService) extends JsonSupport {
       get {
         complete(getAllADs("id"))
       } ~
-      post {
-        entity(as[ADEntity]) { adEntity=>
-          complete(createAD(adEntity))
+        post {
+          entity(as[ADEntity]) { adEntity =>
+              complete(createAD(adEntity))
+          }
         }
-      }
     } ~
       pathPrefix(LongNumber) { id =>
         pathEndOrSingleSlash {
@@ -35,10 +35,15 @@ class ADServiceRoute(adService: ADService) extends JsonSupport {
             complete(getADByID(id))
           } ~
             post {
-              entity(as[ADEntityUpdate]) { adEntityUpdate =>
-                complete(createOrUpdateAD(id, adEntityUpdate))
+              entity(as[ADEntity]) { adEntity =>
+                complete(createAD(adEntity.withID(id)))
               }
             } ~
+            post {
+              entity(as[ADEntityUpdate]) { adEntityUpdate =>
+                complete(updateAD(id, adEntityUpdate))
+              }
+            }~
             delete {
               onSuccess(deleteAD(id)) { success =>
                 complete(
