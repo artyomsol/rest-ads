@@ -19,6 +19,7 @@ libraryDependencies ++= {
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
     "joda-time" % "joda-time" % "2.9.+",
     "org.joda" % "joda-convert" % "1.8.+",
+    "com.datastax.cassandra" % "cassandra-driver-core" % cassandraDriverVersion,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % Test,
     "org.mockito" % "mockito-core" % "2.8.+" % Test
   )
