@@ -81,7 +81,7 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
     }
     "accept POST /adverts/id requests to modify car advert by id" in new Context {
       val httpEntity = HttpEntity(MediaTypes.`application/json`, updateAD.toJson.compactPrint)
-      when(mockedADService.updateAD(randomId, updateAD)).thenReturn(Future.successful(Some(oldCarAD.withID(randomId))))
+      when(mockedADService.updateAD(randomId, updateAD)).thenReturn(Future.successful(oldCarAD.withID(randomId)))
       Post(entityEndpoint, httpEntity) ~> route ~> check {
         handled shouldBe true
         responseAs[ADEntity] shouldBe a[ADEntity]
@@ -148,7 +148,7 @@ class ADServiceRouteTest extends WordSpec with Matchers with ScalatestRouteTest 
         val updateADFromJson = invalidOldCarADJson.parseJson.convertTo[ADEntityUpdate]
         val entity = HttpEntity(MediaTypes.`application/json`, invalidOldCarADJson)
         val expectedAD = oldCarAD.withID(randomId)
-        when(mockedADService.updateAD(any(classOf[IDType]), any(classOf[ADEntityUpdate]))).thenReturn(Future(Some(expectedAD)))
+        when(mockedADService.updateAD(any(classOf[IDType]), any(classOf[ADEntityUpdate]))).thenReturn(Future(expectedAD))
         Post(entityEndpoint, entity) ~> route ~> check {
           handled shouldBe true
           status shouldBe StatusCodes.OK

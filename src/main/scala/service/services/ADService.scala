@@ -19,12 +19,15 @@ class ADService(implicit system: ActorSystem, dBContext: DBContext) {
   import system.dispatcher
   def getAllADs(sortByField: String, desc: Boolean = false): Source[ADEntity, NotUsed] = getAllPublisher(sortByField, desc)
 
-  def getADByID(id: IDType): Future[ADEntity] = getByID(id)
+  private def checkEmptyResponse(id: IDType) = (response: Option[ADEntity]) => response.fold[ADEntity](throw new DataNotFoundException(s"document id=$id not found"))(identity)
+  def getADByID(id: IDType): Future[ADEntity] = getByID(id).map(checkEmptyResponse(id))
 
   def createAD(ad: ADEntity): Future[ADEntity] = create(ad)
 
-  def updateAD(id: IDType, adEntityUpdate: ADEntityUpdate): Future[Option[ADEntity]] =  updateByID(id, adEntityUpdate)
+  def updateAD(id: IDType, adEntityUpdate: ADEntityUpdate): Future[ADEntity] =  updateByID(id, adEntityUpdate).map(checkEmptyResponse(id))
 
   def deleteAD(id: IDType): Future[Boolean] = deleteByID(id)
 
 }
+
+class DataNotFoundException(message: String) extends Throwable
