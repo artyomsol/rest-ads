@@ -10,16 +10,17 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= {
   val akkaVersion = "10.0.9"
-  val cassandraDriverVersion = "3.2.0"
+  val elasticDriverVersion = "2.2.0"
   val scalaTestVersion = "3.0.1"
   Seq(
     "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
     "com.typesafe.akka" %% "akka-http" % akkaVersion,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaVersion,
-    "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
+    "com.sksamuel.elastic4s" %% "elastic4s-core" % elasticDriverVersion,
+    "com.sksamuel.elastic4s" %% "elastic4s-streams" % elasticDriverVersion,
     "joda-time" % "joda-time" % "2.9.+",
     "org.joda" % "joda-convert" % "1.8.+",
-    "com.datastax.cassandra" % "cassandra-driver-core" % cassandraDriverVersion,
+    "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % Test,
     "org.mockito" % "mockito-core" % "2.8.+" % Test
   )

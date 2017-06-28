@@ -28,7 +28,7 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
   it should {
     import spray.json._
     "deserialized from JSON" in {
-      val jsonOldCarAD = """{"mileage":100000,"price":100,"fuel":"diesel","id":10,"new":false,"firstRegistration":"2017-06-27T00:00:00.000Z","title":"Audi A4 Avant"}"""
+      val jsonOldCarAD = """{"mileage":100000,"price":100,"fuel":"diesel","id":10,"new":false,"first registration":"2017-06-27T00:00:00.000Z","title":"Audi A4 Avant"}"""
       val jsonNewCarAD = """{"mileage":null,"price":100,"fuel":"diesel","id":10,"new":true,"title":"Audi A4 Avant"}"""
       jsonOldCarAD.parseJson.convertTo[ADEntity] shouldEqual oldCarAD
       jsonNewCarAD.parseJson.convertTo[ADEntity] shouldEqual newCarAD

@@ -10,7 +10,7 @@ import scala.util.Try
  * Package: service.model
  * Created by asoloviov on 6/27/17 11:12 PM.
  */
-case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: Option[Int], `new`: Option[Boolean], mileage: Option[Int], firstRegistration: Option[DateTime] = None) {
+case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: Option[Int], `new`: Option[Boolean], mileage: Option[Int], `first registration`: Option[DateTime] = None) {
   require(title.exists(_.nonEmpty), "title.field.empty")
 
   //TODO must be tested
@@ -23,7 +23,7 @@ case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: 
       price.getOrElse(ad.price),
       resultingUsage,
       mileage.orElse(ad.mileage).filterNot(_ => resultingUsage),
-      firstRegistration.orElse(ad.firstRegistration).filterNot(_ => resultingUsage)
+      `first registration`.orElse(ad.`first registration`).filterNot(_ => resultingUsage)
     )
   }
 
@@ -33,7 +33,7 @@ case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: 
     require(price.isDefined, "price.field.empty")
     require(`new`.isDefined, "new.field.empty")
     require(`new`.isDefined, "new.field.empty")
-    ADEntity(Some(id), title.get, fuel.get, price.get, `new`.get, mileage, firstRegistration)
+    ADEntity(Some(id), title.get, fuel.get, price.get, `new`.get, mileage, `first registration`)
   }
 }
 
