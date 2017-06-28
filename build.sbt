@@ -34,6 +34,8 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 
 scalacOptions := Seq("-feature", "-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.8", "-Ydead-code")
 
+ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+
 // sbt-git version control
 lazy val `rest-ads` = (project in file(".")).
   enablePlugins(BuildInfoPlugin, GitVersioning, GitBranchPrompt).
