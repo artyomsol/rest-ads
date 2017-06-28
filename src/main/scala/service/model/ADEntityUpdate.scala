@@ -9,6 +9,7 @@ import service.model.FuelType._
  * Created by asoloviov on 6/27/17 11:12 PM.
  */
 case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: Option[Int], `new`: Option[Boolean], mileage: Option[Int], firstRegistration: Option[DateTime] = None) {
+  //TODO must be tested
   def applyTo(ad: ADEntity): ADEntity = {
     val resultingUsage: Boolean = `new`.getOrElse(ad.`new`)
     ADEntity(
