@@ -3,7 +3,10 @@ package service.model.db
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
+import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.RichSearchHit
+import com.sksamuel.elastic4s.mappings.FieldType.{StringType, _}
+import com.sksamuel.elastic4s.mappings.{DynamicMapping, MappingDefinition}
 import com.sksamuel.elastic4s.streams.ReactiveElastic._
 import service.model.ADEntity.IDType
 import service.model.{ADEntity, ADEntityUpdate}
@@ -17,6 +20,16 @@ import scala.concurrent.{ExecutionContext, Future}
  * Created by asoloviov on 6/28/17 7:04 PM.
  */
 class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("accounts") {
+  override val theMapping: MappingDefinition = mapping("ADEntity").dynamic(DynamicMapping.Strict).all(false).fields(
+    "id".typed(StringType).analyzer(NotAnalyzed).docValuesFormat(true),
+    "title".typed(StringType).analyzer(NotAnalyzed).docValuesFormat(true),
+    "fuel".typed(StringType).analyzer(NotAnalyzed).docValuesFormat(true),
+    "price".typed(IntegerType),
+    "new".typed(BooleanType),
+    "mileage".typed(IntegerType),
+    "first registration".typed(DateType).format(timePattern)
+  )
+
   def create(ad: ADEntity)(implicit ec: ExecutionContext): Future[ADEntity] = ???
 
   def getByID(id: IDType)(implicit ec: ExecutionContext): Future[ADEntity] = ???

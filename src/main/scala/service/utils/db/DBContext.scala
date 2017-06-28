@@ -1,11 +1,15 @@
 package service.utils.db
 
+import akka.actor.ActorSystem
+import akka.event.LoggingAdapter
 import com.sksamuel.elastic4s.ElasticClient
 import com.typesafe.config.Config
 import org.elasticsearch.common.settings.Settings
 import service.model.db.AdvertsDAO
 import service.utils.AppConfig
 
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{Await, ExecutionContext}
 import scala.util.Try
 
 /**
@@ -19,6 +23,13 @@ class DBContext(esClientCreator: () => ElasticClient,
   def getESClient: ElasticClient = esClientCreator()
 
   val advertsDAO = AdvertsDAO()(this)
+
+  def init(timeout: FiniteDuration)(implicit system: ActorSystem): this.type = {
+    implicit val ec: ExecutionContext = system.dispatcher
+    implicit def log: LoggingAdapter = system.log
+    val initialized = Await.result(advertsDAO.checkOrCreateIndex(), timeout)
+    if (initialized) this else throw new ExceptionInInitializerError("DBContext initialization failed")
+  }
 }
 
 object DBContext {
