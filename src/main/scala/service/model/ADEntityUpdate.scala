@@ -11,8 +11,8 @@ import scala.util.Try
  * Package: service.model
  * Created by asoloviov on 6/27/17 11:12 PM.
  */
-case class ADEntityUpdate(title: Option[String], fuel: Option[FuelType], price: Option[Int], `new`: Option[Boolean], mileage: Option[Int], `first registration`: Option[DateTime] = None) {
-  require(title.exists(_.nonEmpty), "title.field.empty")
+case class ADEntityUpdate(title: Option[String] = None, fuel: Option[FuelType] = None, price: Option[Int] = None, `new`: Option[Boolean]= None, mileage: Option[Int]= None, `first registration`: Option[DateTime] = None) {
+  require(title.forall(_.nonEmpty), "title.field.empty")
 
   //TODO must be tested
   def applyTo(ad: ADEntity): ADEntity = {

@@ -1,11 +1,11 @@
 package service.model.db
 
-import com.sksamuel.elastic4s.testkit.{ElasticSugar, SearchMatchers}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{Matchers, WordSpec}
-import service.utils.db.DBContext
-import service.utils.{AppConfig, TestData}
+import service.model.ADEntity
+import service.rest.JsonSupport
+import service.utils.{TestDBContext, TestData}
 
 import scala.concurrent.duration._
 
@@ -14,15 +14,16 @@ import scala.concurrent.duration._
  * Package: service.model.db
  * Created by asoloviov on 6/29/17 1:11 PM.
  */
-class AdvertsDAOTest extends WordSpec with ElasticSugar with Eventually with Matchers with SearchMatchers with TestData {
+class AdvertsDAOTest extends WordSpec with TestDBContext with Eventually with Matchers with TestData with JsonSupport {
   implicit val duration: FiniteDuration = 10.seconds
   implicit override val patienceConfig = PatienceConfig(timeout = scaled(Span(5, Seconds)))
 
+  import service.model.ADEntity._
+  import spray.json._
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  trait Context {
-    val appConfig = AppConfig()
-    val dbContext = new DBContext(() => client, "test_", appConfig)
+  trait Context extends DBContextContext {
     val advertsDAO = dbContext.advertsDAO
     val indexName = advertsDAO.indexName
   }
@@ -36,24 +37,26 @@ class AdvertsDAOTest extends WordSpec with ElasticSugar with Eventually with Mat
     }
     "store AD entity to ES " in new Context {
       val result = advertsDAO.create(oldCarAD).await
-      blockUntilCount(1, indexName)
       result shouldEqual oldCarAD
     }
     "retrieve stored entity" in new Context {
       advertsDAO.create(oldCarAD).await shouldEqual oldCarAD
-      blockUntilCount(1, indexName)
       advertsDAO.getByID(oldCarAD.id.get).await shouldEqual Some(oldCarAD)
     }
     "delete stored entity" in new Context {
       advertsDAO.create(newCarAD).await shouldEqual newCarAD
-      blockUntilCount(1, indexName)
       advertsDAO.deleteByID(newCarAD.id.get).await shouldEqual true
+    }
+    "override stored AD with direct create call " in new Context {
+      val id = oldCarAD.id.get
+      advertsDAO.create(oldCarAD).await shouldEqual oldCarAD
+      advertsDAO.create(newCarAD).await shouldEqual newCarAD
+      advertsDAO.client.execute(search(indexName) query idsQuery(id)).await.hits(0).sourceAsString.parseJson.convertTo[ADEntity] shouldEqual newCarAD
     }
     "update stored entity" in new Context {
       advertsDAO.create(newCarAD).await shouldEqual newCarAD
-      blockUntilCount(1, indexName)
-      advertsDAO.updateByID(oldCarAD.id.get,oldCarAD.toUpdateAD).await shouldEqual Some(oldCarAD)
-      advertsDAO.getByID(oldCarAD.id.get).await shouldEqual Some(oldCarAD)
+      advertsDAO.updateByID(newCarAD.id.get, updateToOldCarAD).await shouldEqual Some(oldCarAD)
+      advertsDAO.getByID(newCarAD.id.get).await shouldEqual Some(oldCarAD)
     }
   }
 }

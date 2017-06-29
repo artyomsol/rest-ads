@@ -16,6 +16,9 @@ case class ADEntity(id: Option[IDType], title: String, fuel: FuelType, price: In
   require(!title.isEmpty, "title.field.empty")
   require(`new` == mileage.isEmpty, "new.car.mileage.defined")
   require(`new` == `first registration`.isEmpty, "new.car.firstRegistration.defined")
+  require(`first registration`.forall(_.isBeforeNow), "used.car.future.firstRegistration:")
+  require(price > 0, "price.not.positive")
+  require(mileage.forall(_ > 0), "mileage.not.positive")
 
   def withID(thatID: IDType): ADEntity = copy(id = Some(thatID))
 

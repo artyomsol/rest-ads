@@ -9,6 +9,7 @@ import com.sksamuel.elastic4s.mappings.dynamictemplate.DynamicMapping
 import com.sksamuel.elastic4s.searches.RichSearchHit
 import com.sksamuel.elastic4s.streams.ReactiveElastic._
 import org.elasticsearch.action.DocWriteResponse.Result
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy
 import org.elasticsearch.search.sort.SortOrder
 import service.model.{ADEntity, ADEntityUpdate}
 import service.utils.db._
@@ -40,7 +41,7 @@ class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
 
   def create(ad: ADEntity)(implicit ec: ExecutionContext): Future[ADEntity] = {
     val adToStore = if (ad.idDefined) ad else ad.withID(ADEntity.getNextID)
-    client.execute(indexInto(indexName / typeName) id adToStore.id.get doc adToStore.toJson.compactPrint)
+    client.execute(indexInto(indexName / typeName) id adToStore.id.get doc adToStore.toJson.compactPrint refresh RefreshPolicy.IMMEDIATE)
       .map(indexResult => adToStore)
   }
 
@@ -57,9 +58,9 @@ class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
 
   def deleteByID(id: IDType)(implicit ec: ExecutionContext): Future[Boolean] = client.execute(delete(id) from indexName / typeName).map(_.getResult == Result.DELETED)
 
-  def updateByID(id: IDType, adEntityUpdate: ADEntityUpdate)(implicit ec: ExecutionContext): Future[Option[ADEntity]] =
-  // in order to check field restrictions we must merge adverts manually instead of ES update query using
-  // TODO implement document version aware update with retries on conflicts
+  def updateByID(id: IDType, adEntityUpdate: ADEntityUpdate)(implicit ec: ExecutionContext): Future[Option[ADEntity]] = {
+    // in order to check field restrictions we must merge adverts manually instead of ES update query using
+    // TODO implement document version aware update with retries on conflicts
     getByID(id).flatMap {
       case Some(ad) => create(adEntityUpdate.applyTo(ad)).map(Some.apply)
       case None => adEntityUpdate.toADEntityWithID(id) match {
@@ -67,6 +68,7 @@ class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
         case _ => Future.successful(None)
       }
     }
+  }
 
   private def hitToEntity(hit: RichSearchHit)(implicit ec: ExecutionContext): Future[ADEntity] = Future {
     hit.sourceAsString.parseJson.convertTo[ADEntity]

@@ -24,6 +24,15 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
     "require title non empty AD title" in {
       an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "", gasoline, 10, `new` = true)
     }
+    "require strictly positive values for price and mileage" in {
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 0, `new` = true)
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, -10, `new` = true)
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` = false, mileage = Some(0), Some(DateTime.now().withTimeAtStartOfDay()))
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` = false, mileage = Some(-10), Some(DateTime.now().withTimeAtStartOfDay()))
+    }
+    "require past tense dates in firest registration field" in {
+      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` =false, mileage = Some(10), Some(DateTime.now().plusDays(1)))
+    }
   }
   it should {
     import spray.json._
@@ -45,7 +54,7 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
   it should {
     "convert itself to ADEntityUpdate instance" in {
       val updateAD = oldCarAD.toUpdateAD
-      updateAD shouldEqual updateToOldCarAD.copy(price = Some(100))
+      updateAD shouldEqual fullUpdateCarAD
     }
   }
 }
