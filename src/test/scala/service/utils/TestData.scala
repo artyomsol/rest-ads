@@ -1,6 +1,6 @@
 package service.utils
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 import service.model.FuelType._
 import service.model.{ADEntity, ADEntityUpdate, FuelType}
 
@@ -25,10 +25,10 @@ trait TestData {
       id = Some(ADEntity.getNextID),
       title = Random.nextString(10),
       fuel = FuelType.apply(Random.nextInt(FuelType.maxId)),
-      price = Random.nextInt(),
+      price = 1 + Random.nextInt(Int.MaxValue - 1),
       `new` = is_new,
       mileage = if (is_new) None else Some(Random.nextInt(Int.MaxValue)),
-      `first registration` = if (is_new) None else Some(DateTime.now().minusDays(Random.nextInt(365000)))
+      `first registration` = if (is_new) None else Some(DateTime.now().minusDays(Random.nextInt(365000)).withZone(DateTimeZone.UTC))
     )
   }
 

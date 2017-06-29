@@ -43,6 +43,10 @@ class AdvertsDAOTest extends WordSpec with TestDBContext with Eventually with Ma
       advertsDAO.create(oldCarAD).await shouldEqual oldCarAD
       advertsDAO.getByID(oldCarAD.id.get).await shouldEqual Some(oldCarAD)
     }
+    "storing AD generates id of the new entity" in new Context {
+      val result = advertsDAO.create(oldCarAD.copy(id = None)).await
+      result shouldEqual oldCarAD.withID(result.id.get)
+    }
     "delete stored entity" in new Context {
       advertsDAO.create(newCarAD).await shouldEqual newCarAD
       advertsDAO.deleteByID(newCarAD.id.get).await shouldEqual true

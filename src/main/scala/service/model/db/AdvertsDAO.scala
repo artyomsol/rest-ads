@@ -76,9 +76,12 @@ class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
 
   private val parallelism = Runtime.getRuntime.availableProcessors()
 
-  def getAllPublisher(sortByField: String, desc: Boolean)(implicit system: ActorSystem): Source[ADEntity, NotUsed] = {
+  def getAllPublisher(sortByField: String, desc: Boolean = false)(implicit system: ActorSystem): Source[ADEntity, NotUsed] = {
     import system.dispatcher
-    val query = search(indexName / typeName) sortBy (fieldSort(sortByField) order (if (desc) SortOrder.DESC else SortOrder.ASC))
+    val sortOder = if (desc) SortOrder.DESC else SortOrder.ASC
+    val defaultFieldSort = fieldSort("id") order sortOder
+    val sortDefinition = (fieldSort(sortByField) order sortOder) :: (if (sortByField == "id") List.empty else List(defaultFieldSort))
+    val query = search(indexName / typeName) scroll "10s" sortBy sortDefinition
     val publisher = client.publisher(query)
     Source.fromPublisher(publisher).mapAsync(parallelism)(hitToEntity)
   }

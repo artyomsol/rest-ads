@@ -18,7 +18,7 @@ case class ADEntity(id: Option[IDType], title: String, fuel: FuelType, price: In
   require(`new` == `first registration`.isEmpty, "new.car.firstRegistration.defined")
   require(`first registration`.forall(_.isBeforeNow), "used.car.future.firstRegistration:")
   require(price > 0, "price.not.positive")
-  require(mileage.forall(_ > 0), "mileage.not.positive")
+  require(mileage.forall(_ >= 0), "mileage.negative")
 
   def withID(thatID: IDType): ADEntity = copy(id = Some(thatID))
 
@@ -37,5 +37,5 @@ object ADEntity {
 
   implicit val adEntityFormat = jsonFormat7(ADEntity.apply)
 
-  def getNextID: IDType = UUID.randomUUID().toString.filterNot(_ == "-")
+  def getNextID: IDType = UUID.randomUUID().toString.filterNot(_ == '-')
 }

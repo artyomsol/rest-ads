@@ -24,10 +24,12 @@ class ADEntityTest extends WordSpec with Matchers with TestData {
     "require title non empty AD title" in {
       an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "", gasoline, 10, `new` = true)
     }
-    "require strictly positive values for price and mileage" in {
+    "require strictly positive values for price" in {
       an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 0, `new` = true)
       an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, -10, `new` = true)
-      an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` = false, mileage = Some(0), Some(DateTime.now().withTimeAtStartOfDay()))
+    }
+    "require non negative values mileage" in {
+      ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` = false, mileage = Some(0), Some(DateTime.now().withTimeAtStartOfDay())) shouldBe a[ADEntity]
       an[IllegalArgumentException] should be thrownBy ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", gasoline, 10, `new` = false, mileage = Some(-10), Some(DateTime.now().withTimeAtStartOfDay()))
     }
     "require past tense dates in firest registration field" in {
