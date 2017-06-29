@@ -10,6 +10,7 @@ import org.scalatest.{Matchers, WordSpec}
 import service.model.ADEntity
 import service.rest.routes.ADServiceRoute
 import service.services.ADService
+import service.utils.AppConfig
 
 /**
  * Project: rest-ads
@@ -25,8 +26,9 @@ class RoutedHttpServiceTest extends WordSpec with Matchers with ScalatestRouteTe
 
     val httpService = new RoutedHttpService {
       val adServiceRouter = echoServiceRouter
+      override val cnf: AppConfig = AppConfig()
     }
-    val route = httpService.routes
+    val route = httpService.route
     val randomPath = ADEntity.getNextID
   }
 

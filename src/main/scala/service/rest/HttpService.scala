@@ -11,7 +11,6 @@ import scala.concurrent.ExecutionContext
  * Package: service.rest
  * Created by asoloviov on 6/27/17 6:43 PM.
  */
-class HttpService(adService: ADService)(implicit ec: ExecutionContext, val cnf: AppConfig) extends RoutedHttpService with CorsSupport {
+class HttpService(adService: ADService)(implicit ec: ExecutionContext, val cnf: AppConfig) extends RoutedHttpService {
   val adServiceRouter = new ADServiceRoute(adService)
-  val route = corsEnabled(routes)
 }

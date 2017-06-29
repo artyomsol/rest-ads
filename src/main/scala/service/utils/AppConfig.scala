@@ -2,6 +2,7 @@ package service.utils
 
 import com.typesafe.config.{Config, ConfigFactory}
 
+import scala.concurrent.duration._
 import scala.util.Try
 
 /**
@@ -12,7 +13,11 @@ import scala.util.Try
 class AppConfig(val config: Config) {
   val appConfig = config.getConfig("app")
   val actorSystemName = Try(appConfig.getString("actorsystem.name")).getOrElse("rest-ads")
-  val allowedOriginOpt = Try(appConfig.getString("http.cors.allowed-origin")).toOption
+  private val httpConfig = appConfig.getConfig("http")
+  val httpHost: String = Try(httpConfig.getString("host")).getOrElse("localhost")
+  val httpPort: Int = Try(httpConfig.getInt("port")).getOrElse(9000)
+  val allowedOriginOpt = Try(httpConfig.getString("cors.allowed-origin")).toOption
+  val dbInitializationTimeout: FiniteDuration = Try(appConfig.getDuration("db.init.timeout", MILLISECONDS).millis).getOrElse(5.seconds)
 }
 
 object AppConfig {

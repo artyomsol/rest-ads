@@ -8,9 +8,11 @@ import service.rest.routes.ADServiceRoute
  * Package: service.rest
  * Created by asoloviov on 6/27/17 9:36 PM.
  */
-trait RoutedHttpService {
+trait RoutedHttpService extends CorsSupport {
   val adServiceRouter: ADServiceRoute
-  def routes = pathPrefix("v1") {
-    adServiceRouter.route
+  def route = pathPrefix("v1") {
+    corsEnabled {
+      adServiceRouter.route
+    }
   }
 }
