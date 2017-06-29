@@ -21,7 +21,7 @@ import scala.util.Success
  * Package: service.model.db
  * Created by asoloviov on 6/28/17 7:04 PM.
  */
-class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("accounts") {
+class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
 
   private val typeName = "ADEntity"
   override val theMapping: MappingDefinition = mapping(typeName).dynamic(DynamicMapping.Strict).all(false)

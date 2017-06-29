@@ -10,17 +10,19 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= {
   val akkaVersion = "10.0.9"
-  val elastic4sVersion = "5.4.0"
+  val elastic4sVersion = "5.4.5"
   val scalaTestVersion = "3.0.1"
   Seq(
     "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
     "com.typesafe.akka" %% "akka-http" % akkaVersion,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaVersion,
+    //    "com.typesafe.akka" %% "akka-slf4j" % "2.5.3",
     "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-tcp" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-streams" % elastic4sVersion,
     "joda-time" % "joda-time" % "2.9.+",
     "org.joda" % "joda-convert" % "1.8.+",
+    "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % Test,
     "org.mockito" % "mockito-core" % "2.8.+" % Test,
@@ -37,7 +39,9 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 
 scalacOptions := Seq("-feature", "-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.8", "-Ydead-code")
 
-ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+ivyScala := ivyScala.value map {
+  _.copy(overrideScalaVersion = true)
+}
 
 // sbt-git version control
 lazy val `rest-ads` = (project in file(".")).

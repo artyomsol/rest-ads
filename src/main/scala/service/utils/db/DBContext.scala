@@ -1,7 +1,5 @@
 package service.utils.db
 
-import akka.actor.ActorSystem
-import akka.event.LoggingAdapter
 import com.sksamuel.elastic4s.TcpClient
 import com.typesafe.config.Config
 import org.elasticsearch.common.settings.Settings
@@ -24,9 +22,7 @@ class DBContext(esClientCreator: () => TcpClient,
 
   val advertsDAO = AdvertsDAO()(this)
 
-  def init(timeout: FiniteDuration)(implicit system: ActorSystem): this.type = {
-    implicit val ec: ExecutionContext = system.dispatcher
-    implicit def log: LoggingAdapter = system.log
+  def init(timeout: FiniteDuration)(implicit ec: ExecutionContext): this.type = {
     val initialized = Await.result(advertsDAO.checkOrCreateIndex(), timeout)
     if (initialized) this else throw new ExceptionInInitializerError("DBContext initialization failed")
   }
@@ -51,6 +47,7 @@ object DBContext {
       .put("es.logger.level", Try(cfg.getString("logger.level")).getOrElse("INFO"))
       .build()
     TcpClient.transport(settings, "elasticsearch://" + cfg.getString("cluster.connect"))
+    //      HttpClient.apply(ElasticsearchClientUri("elasticsearch://" + cfg.getString("cluster.connect")))
   }
 
   private def esIndexPrefixForConfigPath(cnf: Config, path: String = "app.db.default"): String = cnf.getString(s"$path.es.index.prefix")
