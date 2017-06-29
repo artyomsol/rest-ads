@@ -10,7 +10,7 @@ import service.rest.routes.ADServiceRoute
  */
 trait RoutedHttpService {
   val adServiceRouter: ADServiceRoute
-  val routes = pathPrefix("v1") {
+  def routes = pathPrefix("v1") {
     adServiceRouter.route
   }
 }

@@ -12,6 +12,7 @@ import scala.util.Try
 class AppConfig(val config: Config) {
   val appConfig = config.getConfig("app")
   val actorSystemName = Try(appConfig.getString("actorsystem.name")).getOrElse("rest-ads")
+  val allowedOriginOpt = Try(appConfig.getString("http.cors.allowed-origin")).toOption
 }
 
 object AppConfig {
