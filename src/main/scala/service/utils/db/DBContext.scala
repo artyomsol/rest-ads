@@ -2,7 +2,7 @@ package service.utils.db
 
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
-import com.sksamuel.elastic4s.ElasticClient
+import com.sksamuel.elastic4s.TcpClient
 import com.typesafe.config.Config
 import org.elasticsearch.common.settings.Settings
 import service.model.db.AdvertsDAO
@@ -17,10 +17,10 @@ import scala.util.Try
  * Package: service.utils.db
  * Created by asoloviov on 6/28/17 6:39 PM.
  */
-class DBContext(esClientCreator: () => ElasticClient,
+class DBContext(esClientCreator: () => TcpClient,
                 val indexPrefix: String = "",
                 val appConfig: AppConfig) {
-  def getESClient: ElasticClient = esClientCreator()
+  def getESClient: TcpClient = esClientCreator()
 
   val advertsDAO = AdvertsDAO()(this)
 
@@ -43,14 +43,14 @@ object DBContext {
 
   def forProfileName(cnf: AppConfig = AppConfig(), profileName: String) = forConfigPath(cnf, s"app.db.$profileName")
 
-  private def getESClientForConfigPath(cnf: Config, path: String = "app.db.default"): () => ElasticClient = () => {
+  private def getESClientForConfigPath(cnf: Config, path: String = "app.db.default"): () => TcpClient = () => {
     val cfg = cnf.getConfig(s"$path.es")
-    val settings = Settings.settingsBuilder()
+    val settings = Settings.builder()
       .put("cluster.name", cfg.getString("cluster.name"))
       .put("node.name", cfg.getString("cluster.name"))
       .put("es.logger.level", Try(cfg.getString("logger.level")).getOrElse("INFO"))
       .build()
-    ElasticClient.transport(settings, "elasticsearch://" + cfg.getString("cluster.connect"))
+    TcpClient.transport(settings, "elasticsearch://" + cfg.getString("cluster.connect"))
   }
 
   private def esIndexPrefixForConfigPath(cnf: Config, path: String = "app.db.default"): String = cnf.getString(s"$path.es.index.prefix")
