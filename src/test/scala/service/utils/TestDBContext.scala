@@ -13,7 +13,7 @@ import scala.util.Random
  */
 trait TestDBContext extends WordSpecLike with ElasticSugar with SearchMatchers with IndexMatchers {
   trait DBContextContext {
-    val appConfig = AppConfig()
+    implicit val appConfig = AppConfig()
     val dbContext = new DBContext(() => client, Random.alphanumeric.take(5).mkString.toLowerCase + "_", appConfig)
   }
 }

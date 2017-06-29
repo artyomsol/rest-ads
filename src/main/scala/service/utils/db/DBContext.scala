@@ -47,7 +47,6 @@ object DBContext {
       .put("es.logger.level", Try(cfg.getString("logger.level")).getOrElse("INFO"))
       .build()
     TcpClient.transport(settings, "elasticsearch://" + cfg.getString("cluster.connect"))
-    //      HttpClient.apply(ElasticsearchClientUri("elasticsearch://" + cfg.getString("cluster.connect")))
   }
 
   private def esIndexPrefixForConfigPath(cnf: Config, path: String = "app.db.default"): String = cnf.getString(s"$path.es.index.prefix")

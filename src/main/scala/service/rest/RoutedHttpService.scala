@@ -2,6 +2,7 @@ package service.rest
 
 import akka.http.scaladsl.server.Directives._
 import service.rest.routes.ADServiceRoute
+import service.utils.ServiceException
 
 /**
  * Project: rest-ads
@@ -10,9 +11,12 @@ import service.rest.routes.ADServiceRoute
  */
 trait RoutedHttpService extends CorsSupport {
   val adServiceRouter: ADServiceRoute
+
   def route = pathPrefix("v1") {
     corsEnabled {
-      adServiceRouter.route
+      handleExceptions(ServiceException.serviceExceptionHandler) {
+        adServiceRouter.route
+      }
     }
   }
 }

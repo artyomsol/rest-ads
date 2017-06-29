@@ -5,6 +5,7 @@ import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import service.model.ADEntity.IDType
 import service.model.{ADEntity, ADEntityUpdate}
+import service.utils.DataNotFoundException
 import service.utils.db.DBContext
 
 import scala.concurrent.Future
@@ -19,11 +20,12 @@ class ADService(implicit system: ActorSystem, dBContext: DBContext) {
   import dBContext.advertsDAO._
   import system.dispatcher
 
-  private def throwDataNotFound(id: IDType): Nothing = throw new DataNotFoundException(s"document id=$id not found")
+  private def throwDataNotFound(id: IDType): Nothing = throw DataNotFoundException(s"document id=$id not found")
 
   private def checkEmptyResponse(id: IDType) = (response: Option[ADEntity]) => response.fold[ADEntity](throwDataNotFound(id))(identity)
 
   private val fieldsSet = classOf[ADEntity].getDeclaredFields.map(_.getName)
+
   def getAllADs(sortByField: String = "id", desc: Boolean = false): Source[ADEntity, NotUsed] = {
     require(fieldsSet.contains(sortByField), s"field.not.exists")
     getAllPublisher(sortByField, desc)
@@ -39,4 +41,3 @@ class ADService(implicit system: ActorSystem, dBContext: DBContext) {
 
 }
 
-class DataNotFoundException(message: String) extends Throwable

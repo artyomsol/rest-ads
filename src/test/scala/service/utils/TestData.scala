@@ -16,6 +16,7 @@ trait TestData {
   val fullUpdateCarAD = ADEntityUpdate(Some("Audi A4 Avant"), Some(diesel), Some(100), `new` = Some(false), mileage = Some(100000), Some(DateTime.parse("2017-06-27T00:00:00.000Z")))
   val updateToOldCarAD = ADEntityUpdate(None, None, None, Some(false), Some(100000), Some(DateTime.parse("2017-06-27T00:00:00.000Z")))
   val newCarAD = ADEntity(Some("e029819db7b34917a3a277625f3e660e"), "Audi A4 Avant", diesel, 100, `new` = true)
+  val newCarADJson = """{"price":100,"fuel":"diesel","id":"e029819db7b34917a3a277625f3e660e","new":true,"title":"Audi A4 Avant"}"""
   val updateAD = ADEntityUpdate(Some(Random.nextString(10)), Some(FuelType.diesel), None, `new` = Some(false), mileage = Some(10001), Some(DateTime.parse("2017-06-27T00:00:00.000Z")))
   val totalUpdateAD = ADEntityUpdate(Some(Random.nextString(10)), Some(FuelType.diesel), Some(10000), `new` = Some(false), mileage = Some(10001), Some(DateTime.parse("2017-06-27T00:00:00.000Z")))
 

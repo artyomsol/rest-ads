@@ -16,7 +16,6 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
     "com.typesafe.akka" %% "akka-http" % akkaVersion,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaVersion,
-    //    "com.typesafe.akka" %% "akka-slf4j" % "2.5.3",
     "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-tcp" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-streams" % elastic4sVersion,
