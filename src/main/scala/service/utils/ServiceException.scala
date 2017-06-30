@@ -19,6 +19,11 @@ final case class DataNotFoundException(message: String) extends ServiceException
   override def toStatusCode: StatusCode = StatusCodes.NotFound
 }
 
+final case class DBInitializationException(message: String = "DBContext initialization failed") extends ServiceException {
+  override def toStatusCode: StatusCode = StatusCodes.ServiceUnavailable
+}
+
+
 object ServiceException {
   implicit def serviceExceptionHandler: ExceptionHandler =
     ExceptionHandler {

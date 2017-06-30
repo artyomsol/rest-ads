@@ -6,6 +6,8 @@ import service.model.ADEntity
 import service.services.ADService
 import service.utils.ServiceSpec
 
+import scala.concurrent.Future
+
 /**
  * Project: rest-ads
  * Package: service.rest
@@ -16,7 +18,7 @@ class HttpServiceTest extends ServiceSpec with Matchers with JsonSupport {
   import ADEntity._
 
   trait TestContext extends Context {
-    override val adService = new ADService()(system, dbContext)
+    override val adService = new ADService(Future.successful(dbContext))(system)
     val handler = new HttpService(adService)(executor, appConfig)
     val route = handler.route
   }

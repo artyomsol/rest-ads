@@ -4,6 +4,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Span}
 import service.services.ADService
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 /**
@@ -18,7 +19,7 @@ class ServiceSpec extends AkkaSystemSpec with TestDBContext with TestData with E
   trait Context extends SystemContext with DBContextContext {
     val testAdvertsNumber: Int = 10
     val testAdverts = generateAdverts(testAdvertsNumber)
-    val adService = new ADService()(system, dbContext)
+    val adService = new ADService(Future.successful(dbContext))(system)
     dbContext.init(duration)
     blockUntilIndexExists(dbContext.advertsDAO.indexName)
     testAdverts.foreach(dbContext.advertsDAO.create)

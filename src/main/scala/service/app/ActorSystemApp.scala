@@ -2,7 +2,6 @@ package service.app
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import app.BuildInfo
 import service.utils.{AppConfig, AppSignalHandler}
 
 import scala.concurrent.ExecutionContext

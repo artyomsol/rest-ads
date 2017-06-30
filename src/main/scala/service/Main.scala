@@ -1,10 +1,10 @@
-package service.utils
+package service
 
 import akka.http.scaladsl.Http
 import service.app.ActorSystemApp
 import service.rest.HttpService
 import service.services.ADService
-import service.utils.db.DBContext
+import service.utils.EventualDBContextFactory
 
 /**
  * Project: rest-ads
@@ -12,12 +12,8 @@ import service.utils.db.DBContext
  * Created by asoloviov on 6/29/17 10:32 PM.
  */
 object Main extends App with ActorSystemApp {
-  implicit val dbContext = try DBContext(cnf).init(cnf.dbInitializationTimeout) catch {
-    case t: Throwable =>
-      system.terminate()
-      throw new IllegalStateException("DBContext creation error:" + t.getMessage, t)
-  }
-  val adService = new ADService()
+  val dbContextFactory = new EventualDBContextFactory(cnf.dbInitializationTimeout)
+  val adService = new ADService(dbContextFactory.getDBContext)
   val httpService = new HttpService(adService)
 
   Http().bindAndHandle(httpService.route, cnf.httpHost, cnf.httpPort)

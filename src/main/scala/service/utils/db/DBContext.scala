@@ -1,13 +1,14 @@
 package service.utils.db
 
+import akka.actor.ActorSystem
 import com.sksamuel.elastic4s.TcpClient
 import com.typesafe.config.Config
 import org.elasticsearch.common.settings.Settings
 import service.model.db.AdvertsDAO
-import service.utils.AppConfig
+import service.utils.{AppConfig, DBInitializationException}
 
+import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{Await, ExecutionContext}
 import scala.util.Try
 
 /**
@@ -22,9 +23,13 @@ class DBContext(esClientCreator: () => TcpClient,
 
   val advertsDAO = AdvertsDAO()(this)
 
-  def init(timeout: FiniteDuration)(implicit ec: ExecutionContext): this.type = {
-    val initialized = Await.result(advertsDAO.checkOrCreateIndex(), timeout)
-    if (initialized) this else throw new ExceptionInInitializerError("DBContext initialization failed")
+  def init(timeout: FiniteDuration = appConfig.dbInitializationTimeout)(implicit system: ActorSystem): Future[DBContext] = {
+    import system.dispatcher
+    val timeOutFuture = akka.pattern.after(timeout, system.scheduler)(Future.failed(DBInitializationException("Timed out")))
+    val createIndexFuture = advertsDAO.checkOrCreateIndex().map(initialized =>
+      if (initialized) this else throw DBInitializationException()
+    )
+    Future.firstCompletedOf(Seq(timeOutFuture, createIndexFuture))
   }
 }
 
@@ -44,7 +49,7 @@ object DBContext {
     val settings = Settings.builder()
       .put("cluster.name", cfg.getString("cluster.name"))
       .put("node.name", cfg.getString("cluster.name"))
-      .put("es.logger.level", Try(cfg.getString("logger.level")).getOrElse("INFO"))
+      .put("logger.level", Try(cfg.getString("logger.level")).getOrElse("INFO"))
       .build()
     TcpClient.transport(settings, "elasticsearch://" + cfg.getString("cluster.connect"))
   }

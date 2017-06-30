@@ -8,14 +8,21 @@ name := "rest-ads"
 
 scalaVersion := "2.11.8"
 
+resolvers ++= Seq (
+  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+  DefaultMavenRepository
+)
+
 libraryDependencies ++= {
-  val akkaVersion = "10.0.9"
+  val akkaHttpVersion = "10.0.9"
   val elastic4sVersion = "5.4.5"
   val scalaTestVersion = "3.0.1"
+  val akkaVersion = "2.4.19"
   Seq(
-    "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
-    "com.typesafe.akka" %% "akka-http" % akkaVersion,
-    "com.typesafe.akka" %% "akka-http-spray-json" % akkaVersion,
+    "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-tcp" % elastic4sVersion,
     "com.sksamuel.elastic4s" %% "elastic4s-streams" % elastic4sVersion,
@@ -23,7 +30,7 @@ libraryDependencies ++= {
     "org.joda" % "joda-convert" % "1.8.+",
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-    "com.typesafe.akka" %% "akka-http-testkit" % akkaVersion % Test,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
     "org.mockito" % "mockito-core" % "2.8.+" % Test,
     "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % Test,
     "com.sksamuel.elastic4s" %% "elastic4s-embedded" % elastic4sVersion % Test
@@ -47,7 +54,7 @@ lazy val `rest-ads` = (project in file(".")).
   enablePlugins(BuildInfoPlugin, GitVersioning, GitBranchPrompt).
   settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, buildInfoBuildNumber),
-    buildInfoPackage := "app",
+    buildInfoPackage := "service.app",
     buildInfoOptions ++= Seq[BuildInfoOption](BuildInfoOption.BuildTime)
   )
 

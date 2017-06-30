@@ -41,13 +41,15 @@ class ADServiceTest extends ServiceSpec with Matchers {
     }
 
     "getAllADs with default orderingby id" in new Context {
-      val result = adService.getAllADs().runFold(List.empty[ADEntity]) { case (acc, e) => e :: acc }.await
+      val source = adService.getAllADs().await
+      val result = source.runFold(List.empty[ADEntity]) { case (acc, e) => e :: acc }.await
       // collecting stream to the list puts the first element to the end of list, so reverse list then
       result.reverse should contain theSameElementsInOrderAs testAdverts.sortBy(_.id.get)
     }
 
     "getAllADs" in new Context {
-      val result = adService.getAllADs("title", desc = true).runFold(List.empty[ADEntity]) { case (acc, e) => e :: acc }.await
+      val source = adService.getAllADs("title", desc = true).await
+      val result = source.runFold(List.empty[ADEntity]) { case (acc, e) => e :: acc }.await
       // do not restore the ordering because of desc = true
       result should contain theSameElementsInOrderAs testAdverts.sortBy(_.title)
     }

@@ -11,6 +11,7 @@ import com.sksamuel.elastic4s.streams.ReactiveElastic._
 import org.elasticsearch.action.DocWriteResponse.Result
 import org.elasticsearch.action.support.WriteRequest.RefreshPolicy
 import org.elasticsearch.search.sort.SortOrder
+import service.model.ADEntity.IDType
 import service.model.{ADEntity, ADEntityUpdate}
 import service.utils.db._
 
@@ -76,17 +77,29 @@ class AdvertsDAO(implicit dBContext: DBContext) extends IndexDAO("adverts") {
 
   private val parallelism = Runtime.getRuntime.availableProcessors()
 
-  def getAllPublisher(sortByField: String, desc: Boolean = false)(implicit system: ActorSystem): Source[ADEntity, NotUsed] = {
+  def getAllPublisher(sortByField: String, desc: Boolean = false)(implicit system: ActorSystem): Future[Source[ADEntity, NotUsed]] = {
     import system.dispatcher
-    val sortOder = if (desc) SortOrder.DESC else SortOrder.ASC
-    val defaultFieldSort = fieldSort("id") order sortOder
-    val sortDefinition = (fieldSort(sortByField) order sortOder) :: (if (sortByField == "id") List.empty else List(defaultFieldSort))
-    val query = search(indexName / typeName) scroll "10s" sortBy sortDefinition
-    val publisher = client.publisher(query)
-    Source.fromPublisher(publisher).mapAsync(parallelism)(hitToEntity)
+    Future {
+      val sortOder = if (desc) SortOrder.DESC else SortOrder.ASC
+      val defaultFieldSort = fieldSort("id") order sortOder
+      val sortDefinition = (fieldSort(sortByField) order sortOder) :: (if (sortByField == "id") List.empty else List(defaultFieldSort))
+      val query = search(indexName / typeName) scroll "10s" sortBy sortDefinition
+      val publisher = client.publisher(query)
+      Source.fromPublisher(publisher).mapAsync(parallelism)(hitToEntity)
+    }
   }
 }
 
 object AdvertsDAO {
   def apply()(implicit dBContext: DBContext) = new AdvertsDAO()
+
+  def create(ad: ADEntity)(dao: AdvertsDAO)(implicit ec: ExecutionContext) = dao.create(ad)
+
+  def getByID(id: IDType)(dao: AdvertsDAO)(implicit ec: ExecutionContext) = dao.getByID(id)
+
+  def deleteByID(id: IDType)(dao: AdvertsDAO)(implicit ec: ExecutionContext) = dao.deleteByID(id)
+
+  def updateByID(id: IDType, adEntityUpdate: ADEntityUpdate)(dao: AdvertsDAO)(implicit ec: ExecutionContext) = dao.updateByID(id, adEntityUpdate)
+
+  def getAllPublisher(sortByField: String, desc: Boolean = false)(dao: AdvertsDAO)(implicit system: ActorSystem) = dao.getAllPublisher(sortByField, desc)
 }
