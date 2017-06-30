@@ -1,0 +1,33 @@
+version: "2"
+services:
+  es1:
+    build:
+      context: ./es
+      dockerfile: es.docker
+    image: adv_es
+    expose:
+      - "9300"
+    ports:
+      - "127.0.0.1:9300:9300"
+      - "127.0.0.1:9200:9200"
+  es2:
+    build:
+      context: ./es
+      dockerfile: es.docker
+    image: adv_es
+    expose:
+      - "9300"
+    ports:
+      - "127.0.0.1:9301:9300"
+      - "127.0.0.1:9201:9200"
+  rest:
+    build:
+      context: ./stage
+    image: rest-ads
+    expose:
+      - "9000"
+    ports:
+      - "127.0.01:9000:9000"
+    links:
+      - "es1"
+      - "es2"

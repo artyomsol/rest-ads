@@ -19,15 +19,12 @@ class DBContextActor(contextCreator: => Future[DBContext]) extends Actor with St
   val initialized: Receive = {
     case GetDBContext =>
       dbContextOpt.get
-      log.debug("responding with " + dbContextOpt.get)
     case InitDBContext | _: InitWithDBContext => //ignore
   }
   val notInitialized: Receive = {
     case InitDBContext =>
-      log.debug("got InitDBContext")
       contextCreator onComplete {
         case Success(dbContext) =>
-          log.debug("initialization result:{}", dbContextOpt)
           self ! InitWithDBContext(dbContext)
         case Failure(e) =>
           log.warning("DBContext init failed:" + e.getMessage)
@@ -35,7 +32,6 @@ class DBContextActor(contextCreator: => Future[DBContext]) extends Actor with St
           context.stop(self)
       }
     case InitWithDBContext(dbContext) =>
-      log.debug("got InitWithDBContext:" + dbContext)
       dbContextOpt = Some(dbContext)
       context.become(initialized)
       unstashAll()
