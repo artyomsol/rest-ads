@@ -48,5 +48,4 @@ Run in Docker
         sbt docker:publishLocal
         cp -r ./target/docker/stage ./docker/
         cd ./docker
-        docker-compose build
-        docker-compose up
+        docker-compose up --build

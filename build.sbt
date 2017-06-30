@@ -14,7 +14,7 @@ resolvers ++= Seq (
 
 libraryDependencies ++= {
   val akkaHttpVersion = "10.0.9"
-  val elastic4sVersion = "5.4.5"
+  val elastic4sVersion = "5.3.2"
   val scalaTestVersion = "3.0.1"
   val akkaVersion = "2.4.19"
   Seq(
