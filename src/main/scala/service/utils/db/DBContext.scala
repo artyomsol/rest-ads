@@ -1,6 +1,7 @@
 package service.utils.db
 
 import akka.actor.ActorSystem
+import akka.event.slf4j.Logger
 import com.sksamuel.elastic4s.TcpClient
 import com.typesafe.config.Config
 import org.elasticsearch.common.settings.Settings
@@ -21,6 +22,8 @@ class DBContext(esClientCreator: () => TcpClient,
                 val appConfig: AppConfig) {
   def getESClient: TcpClient = esClientCreator()
 
+  val log = Logger(getClass.getCanonicalName)
+  log.debug("DBContext created")
   val advertsDAO = AdvertsDAO()(this)
 
   def init(timeout: FiniteDuration = appConfig.dbInitializationTimeout)(implicit system: ActorSystem): Future[DBContext] = {

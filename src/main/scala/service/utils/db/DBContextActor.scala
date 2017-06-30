@@ -18,7 +18,7 @@ class DBContextActor(contextCreator: => Future[DBContext]) extends Actor with St
   var dbContextOpt: Option[DBContext] = None
   val initialized: Receive = {
     case GetDBContext =>
-      dbContextOpt.get
+      sender ! dbContextOpt.get
     case InitDBContext | _: InitWithDBContext => //ignore
   }
   val notInitialized: Receive = {
