@@ -45,7 +45,7 @@ services:
     expose:
       - "9000"
     ports:
-      - "127.0.01:9000:9000"
+      - "127.0.0.1:9000:9000"
     networks:
       - esnet
 
