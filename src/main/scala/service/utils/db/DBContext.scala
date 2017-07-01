@@ -22,8 +22,6 @@ class DBContext(esClientCreator: () => TcpClient,
                 val appConfig: AppConfig) {
   def getESClient: TcpClient = esClientCreator()
 
-  val log = Logger(getClass.getCanonicalName)
-  log.debug("DBContext created")
   val advertsDAO = AdvertsDAO()(this)
 
   def init(timeout: FiniteDuration = appConfig.dbInitializationTimeout)(implicit system: ActorSystem): Future[DBContext] = {
